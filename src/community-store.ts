@@ -26,6 +26,7 @@ function loadState(): CommunityState {
       followedCases: Array.isArray(parsed.followedCases) ? parsed.followedCases : [],
       savedCases: Array.isArray(parsed.savedCases) ? parsed.savedCases : [],
       threads: Array.isArray(parsed.threads) ? parsed.threads : cloneDefaultState().threads,
+      comments: Array.isArray(parsed.comments) ? parsed.comments : cloneDefaultState().comments,
       submissions: Array.isArray(parsed.submissions) ? parsed.submissions : cloneDefaultState().submissions,
       proposals: Array.isArray(parsed.proposals) ? parsed.proposals : cloneDefaultState().proposals,
       notifications: Array.isArray(parsed.notifications) ? parsed.notifications : cloneDefaultState().notifications,
@@ -79,6 +80,7 @@ export function useCommunityStore() {
       state: "default",
       replies: 0,
       source: `CASE/${caseId}`,
+      history: [{ action: "created", at: "now", actor: state.profile.displayName }],
     }
     setState((current) => ({
       ...current,
@@ -114,6 +116,36 @@ export function useCommunityStore() {
           ? "The context is unverified and remains outside canonical evidence."
           : "The context needs a provenance locator before review.",
         variant: "review",
+        unread: true,
+      }, ...current.notifications],
+    }))
+  }
+
+
+  const addReply = (threadId: string, body: string, source?: string) => {
+    const comment = {
+      id: id("comment"),
+      threadId,
+      body,
+      author: state.profile.displayName,
+      role: "member",
+      timestamp: "now",
+      state: "default" as const,
+      source: source?.trim() || undefined,
+    }
+    setState((current) => ({
+      ...current,
+      comments: [comment, ...current.comments],
+      threads: current.threads.map((thread) =>
+        thread.id === threadId
+          ? { ...thread, replies: thread.replies + 1 }
+          : thread,
+      ),
+      notifications: [{
+        id: id("notification"),
+        title: "Reply added to community thread",
+        body: "The reply remains attributed community discussion and does not mutate canonical evidence.",
+        variant: "reply",
         unread: true,
       }, ...current.notifications],
     }))
@@ -170,6 +202,7 @@ export function useCommunityStore() {
     toggleSaved,
     submitQuestion,
     submitContext,
+    addReply,
     createProposal,
     authenticate,
     signOut,
