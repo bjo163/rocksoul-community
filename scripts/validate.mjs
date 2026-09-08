@@ -17,7 +17,7 @@ assert.ok(main.includes("MOONWITNESS_STABLE_REPOSITORY_BASE"))
 assert.ok(!main.includes("rocksoul-assets/main"))
 assert.ok(!pages.includes("#method"))
 assert.ok(!pages.includes("#case"))
-assert.ok(pages.includes('navigation={communityNavigation}'))
+assert.ok(pages.includes('navItems={communityNavigation}'))
 assert.ok(identity.includes("VITE_ROCKSOUL_PLATFORM_IDENTITY_URL"))
 
 for (const route of [
