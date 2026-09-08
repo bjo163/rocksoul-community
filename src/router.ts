@@ -8,6 +8,7 @@ export type CommunityRoute =
   | { name: "proposals" }
   | { name: "profile" }
   | { name: "auth" }
+  | { name: "states" }
   | { name: "not-found"; pathname: string }
 
 function clean(pathname: string) {
@@ -33,5 +34,6 @@ export function resolveCommunityRoute(pathname: string): CommunityRoute {
   if (path === "/proposals" || path === "/community/proposals") return { name: "proposals" }
   if (path === "/profile" || path === "/community/profile") return { name: "profile" }
   if (path === "/auth" || path === "/login") return { name: "auth" }
+  if (path === "/community/system-states") return { name: "states" }
   return { name: "not-found", pathname: path }
 }
