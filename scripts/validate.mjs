@@ -1,8 +1,9 @@
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 
-const [pkgRaw, main, pages, router, identity, readme] = await Promise.all([
+const [pkgRaw, lockRaw, main, pages, router, identity, readme] = await Promise.all([
   readFile("package.json", "utf8"),
+  readFile("package-lock.json", "utf8"),
   readFile("src/main.tsx", "utf8"),
   readFile("src/community-pages.tsx", "utf8"),
   readFile("src/router.ts", "utf8"),
@@ -11,6 +12,9 @@ const [pkgRaw, main, pages, router, identity, readme] = await Promise.all([
 ])
 
 const pkg = JSON.parse(pkgRaw)
+const lock = JSON.parse(lockRaw)
+assert.equal(lock.lockfileVersion, 3)
+assert.equal(lock.packages[""].dependencies["@rocksoul/ui"], pkg.dependencies["@rocksoul/ui"])
 assert.match(pkg.dependencies["@rocksoul/ui"], /^github:bjo163\/rocksoul-ui#[0-9a-f]{40}$/)
 assert.equal(pkg.engines.node, "24.x")
 assert.ok(main.includes("MOONWITNESS_STABLE_REPOSITORY_BASE"))
