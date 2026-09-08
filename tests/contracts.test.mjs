@@ -17,9 +17,20 @@ test("asset consumption uses rocksoul-ui stable registry", async () => {
 
 test("MW-0042 actions mutate community state without canonicalization", async () => {
   const source = await readFile("src/community-store.ts", "utf8")
-  for (const action of ["toggleFollow", "toggleSaved", "submitQuestion", "submitContext", "createProposal"]) {
+  for (const action of ["toggleFollow", "toggleSaved", "submitQuestion", "submitContext", "addReply", "createProposal"]) {
     assert.ok(source.includes(`const ${action}`))
   }
   assert.ok(source.includes('"needs-context"'))
   assert.ok(source.includes('"unverified"'))
+})
+
+test("community discussion preserves comments, history and moderation state", async () => {
+  const data = await readFile("src/community-data.ts", "utf8")
+  const pages = await readFile("src/community-pages.tsx", "utf8")
+  assert.ok(data.includes("CommunityHistoryEvent"))
+  assert.ok(data.includes("CommunityComment"))
+  assert.ok(data.includes('"reported"'))
+  assert.ok(pages.includes("EDIT / MODERATION HISTORY"))
+  assert.ok(pages.includes("SourceLocator"))
+  assert.ok(pages.includes("CommunityStatesPage"))
 })
