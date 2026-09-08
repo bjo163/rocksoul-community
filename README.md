@@ -1,59 +1,37 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/bjo163/rocksoul-assets/main/moonwitness/brand/logo-horizontal.svg" alt="MoonWitness" width="420" />
-
 # ROCKSOUL COMMUNITY
 
 ## **THE PARTICIPATION LAYER**
 
 ### **DISCUSS THE RECORD. KEEP THE SOURCE VISIBLE.**
 
-Community and identity surface for the **MoonWitness × Rocksoul** ecosystem: participation, discussion, profiles, authentication, shared cases, and source-aware collaboration.
-
-![Role](https://img.shields.io/badge/role-COMMUNITY-6F6F6F)
-![Design](https://img.shields.io/badge/design-rocksoul--assets-B43A32)
-![UI](https://img.shields.io/badge/UI-%40rocksoul%2Fui-3178C6)
-![Boundary](https://img.shields.io/badge/community-%E2%89%A0%20canonical%20research-111111)
-
-[Design Source](https://github.com/bjo163/rocksoul-assets) · [UI System](https://github.com/bjo163/rocksoul-ui) · [Public Web](https://github.com/bjo163/rocksoul-web) · [Platform](https://github.com/bjo163/rocksoul-platform)
+Community participation surface for the **MoonWitness × Rocksoul** ecosystem: public profiles, threads, comments, discussion, proposals, collaboration, shared cases, and source-aware participation.
 
 </div>
 
 ---
 
-> **COMMUNITY can discuss, annotate, propose, and collaborate. It does not silently convert participation into canonical research truth.**
+> **COMMUNITY can discuss, annotate, propose, comment, collaborate, and link sources. It does not silently convert participation into canonical research truth or become the IAM authority.**
 
-## Product role
+## Identity boundary
 
-```mermaid
-flowchart LR
-    A["ROCKSOUL-ASSETS\nvisual source"] --> U["ROCKSOUL-UI"]
-    U --> C["ROCKSOUL-COMMUNITY"]
-    C --> D["DISCUSSION"]
-    C --> I["IDENTITY"]
-    C --> P["PROPOSALS"]
-    P --> R["REVIEW / RESEARCH WORKFLOW"]
-```
-
-The canonical visual references are `rocksoul-assets` screens **13–14** for **Community + Authentication**.
-
-## Community surfaces
+Community may present sign-in and profile UX for compatibility, but canonical identity/admin authority belongs to `rocksoul-platform`:
 
 ```text
-COMMUNITY HOME
-THREADS / DISCUSSION
-CASE CONVERSATION
-PROFILE
-AUTHENTICATION
-NOTIFICATIONS
-SOURCE-AWARE PROPOSALS
-MODERATION STATES
+PLATFORM
+= ACCOUNT · USER · ORGANIZATION · ROLE · PERMISSION · AUTHORIZATION · MODERATION AUTHORITY
+
+COMMUNITY
+= PUBLIC PROFILE · THREAD · COMMENT · DISCUSSION · PROPOSAL · PARTICIPATION · COMMUNITY EXPERIENCE
 ```
 
-## Boundary contract
+Authentication UX therefore consumes/bridges identity; it does not redefine account or permission ownership.
+
+## Canonical research boundary
 
 ```text
-USER CONTRIBUTION
+COMMUNITY CONTRIBUTION
       ↓
 DISCUSSION / PROPOSAL
       ↓
@@ -64,33 +42,43 @@ OWNING DOMAIN WORKFLOW
 CANONICALIZATION — only if accepted there
 ```
 
-Community content must preserve attribution, source links, edit history, moderation state, and uncertainty where relevant.
+Popularity, likes, votes, or discussion volume never silently become research validity.
 
-## Ecosystem map
+## Research owners
 
-| Layer | Repository | Responsibility |
-|---|---|---|
-| DESIGN | [`rocksoul-assets`](https://github.com/bjo163/rocksoul-assets) | canonical visual language |
-| UI | [`rocksoul-ui`](https://github.com/bjo163/rocksoul-ui) | reusable components and application grammar |
-| WEB | [`rocksoul-web`](https://github.com/bjo163/rocksoul-web) | public observatory |
-| COMMUNITY | **`rocksoul-community`** | participation, identity, collaboration |
-| PLATFORM | [`rocksoul-platform`](https://github.com/bjo163/rocksoul-platform) | administration, permissions, moderation operations |
-| CONSOLE | [`rocksoul-crayon`](https://github.com/bjo163/rocksoul-crayon) | research/operator workflow |
+```text
+STORY        → rocksoul-mftl
+EVENT        → rocksoul-legend
+PERSON       → rocksoul-superhero
+TEXT         → rocksoul-rgbl
+LAW          → rocksoul-aws
+PERSPECTIVE  → rocksoul-jizz
+RELATIONSHIP → rocksoul-correlation
+```
 
-## Visual contract
+Community may reference any of these records and preserve attribution, source links, edit history, moderation state, and uncertainty. It does not copy them into a second canon.
 
-- expressive community surface, but readable evidence/status first;
-- use canonical MoonWitness brand and Rocksoul lockup;
-- consume `@rocksoul/ui` instead of recreating primitives;
-- authorization and system states must follow `rocksoul-assets`;
-- never reduce trust, moderation, or evidence to color alone;
-- discussion ≠ evidence; popularity ≠ validity; proposal ≠ canonical record.
+## Product layers
 
----
+```text
+DESIGN     → rocksoul-assets
+UI         → rocksoul-ui
+PUBLIC     → rocksoul-web
+COMMUNITY  → rocksoul-community
+ADMIN/IAM  → rocksoul-platform
+OPERATIONS → rocksoul-crayon
+```
+
+## Guardrails
+
+- discussion ≠ evidence;
+- popularity ≠ validity;
+- proposal ≠ canonical record;
+- public profile ≠ canonical PERSON research record;
+- authentication compatibility ≠ IAM ownership;
+- moderation workflow ≠ research adjudication.
 
 <div align="center">
-
-<img src="https://raw.githubusercontent.com/bjo163/rocksoul-assets/main/moonwitness/brand/rocksoul-lockup.svg" alt="MoonWitness Rocksoul" width="520" />
 
 ## **PARTICIPATE WITHOUT LOSING PROVENANCE.**
 
