@@ -6,7 +6,7 @@
 
 ### **DISCUSS THE RECORD. KEEP THE SOURCE VISIBLE.**
 
-Community participation surface for the **MoonWitness × Rocksoul** ecosystem: public profiles, threads, comments, discussion, proposals, collaboration, shared cases, and source-aware participation.
+React + Vite participation application for **MoonWitness × Rocksoul**.
 
 </div>
 
@@ -14,9 +14,30 @@ Community participation surface for the **MoonWitness × Rocksoul** ecosystem: p
 
 > **COMMUNITY can discuss, annotate, propose, comment, collaborate, and link sources. It does not silently convert participation into canonical research truth or become the IAM authority.**
 
-## Identity boundary
+## Current implementation
 
-Community may present sign-in and profile UX for compatibility, but canonical identity/admin authority belongs to `rocksoul-platform`:
+The application now provides:
+
+```text
+/community                       community home + search
+/community/cases/mw-0042         golden-case conversation
+/community/threads               discussion index
+/community/threads/:id           attributed thread detail
+/community/saved                 saved cases
+/community/notifications         reply/review/system notifications
+/community/proposals             source-aware proposals
+/community/profile               public participation profile
+/auth                            Platform identity compatibility bridge
+unknown routes                   explicit 404
+```
+
+MW-0042 supports stateful **Follow**, **Save**, **Ask question**, and **Submit context** behavior. Community submissions remain explicitly non-canonical and start as `unverified` or `needs-context`.
+
+## Ownership boundaries
+
+### Identity
+
+Canonical IAM authority belongs to `rocksoul-platform`.
 
 ```text
 PLATFORM
@@ -26,7 +47,17 @@ COMMUNITY
 = PUBLIC PROFILE · THREAD · COMMENT · DISCUSSION · PROPOSAL · PARTICIPATION · COMMUNITY EXPERIENCE
 ```
 
-Authentication UX therefore consumes/bridges identity; it does not redefine account or permission ownership.
+The Community auth surface is a compatibility bridge. Configure `VITE_ROCKSOUL_PLATFORM_IDENTITY_URL` when a Platform identity endpoint is available. Local compatibility state is not an IAM authority.
+
+### Design and UI
+
+```text
+DESIGN → rocksoul-assets
+UI     → @rocksoul/ui
+APP    → rocksoul-community
+```
+
+`@rocksoul/ui` is pinned to an immutable Git commit. Assets are resolved through `MOONWITNESS_STABLE_REPOSITORY_BASE` exported by `@rocksoul/ui`, which itself pins the released `rocksoul-assets` source. The app does not consume `rocksoul-assets/main`.
 
 ## Canonical research boundary
 
@@ -42,9 +73,7 @@ OWNING DOMAIN WORKFLOW
 CANONICALIZATION — only if accepted there
 ```
 
-Popularity, likes, votes, or discussion volume never silently become research validity.
-
-## Research owners
+Research owners:
 
 ```text
 STORY        → rocksoul-mftl
@@ -56,19 +85,6 @@ PERSPECTIVE  → rocksoul-jizz
 RELATIONSHIP → rocksoul-correlation
 ```
 
-Community may reference any of these records and preserve attribution, source links, edit history, moderation state, and uncertainty. It does not copy them into a second canon.
-
-## Product layers
-
-```text
-DESIGN     → rocksoul-assets
-UI         → rocksoul-ui
-PUBLIC     → rocksoul-web
-COMMUNITY  → rocksoul-community
-ADMIN/IAM  → rocksoul-platform
-OPERATIONS → rocksoul-crayon
-```
-
 ## Guardrails
 
 - discussion ≠ evidence;
@@ -76,7 +92,30 @@ OPERATIONS → rocksoul-crayon
 - proposal ≠ canonical record;
 - public profile ≠ canonical PERSON research record;
 - authentication compatibility ≠ IAM ownership;
-- moderation workflow ≠ research adjudication.
+- moderation workflow ≠ research adjudication;
+- source/provenance state stays visible;
+- unknown routes never silently fall through to the golden case.
+
+## Quality gates
+
+```bash
+npm run validate
+npm test
+npm run typecheck
+npm run build
+npm run test:e2e
+npm run ci
+```
+
+GitHub Actions validates the contract/build on every push and runs Playwright against desktop Chromium plus a 390px mobile viewport. The responsive target follows the canonical `rocksoul-assets` contract: thread/feed first on mobile and content + contextual rail on desktop.
+
+## Runtime
+
+- React 19
+- Vite 8
+- TypeScript 7
+- Node 22.x
+- Vercel SPA rewrite
 
 <div align="center">
 
