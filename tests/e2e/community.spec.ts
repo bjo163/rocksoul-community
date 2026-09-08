@@ -37,6 +37,14 @@ test("member can sign in, follow, save, ask and submit context", async ({ page }
   await page.getByRole("button", { name: "Submit context" }).click()
   await expect(page.getByRole("paragraph").filter({ hasText: context })).toBeVisible()
   await expect(page.getByText("unverified", { exact: true }).first()).toBeVisible()
+
+  await page.goto("/community/threads/thread-mw0042-identity")
+  await expect(page.getByText("EDIT / MODERATION HISTORY")).toBeVisible()
+  const reply = "This reply remains attributed community discussion."
+  await page.getByLabel("Reply").fill(reply)
+  await page.getByLabel("Source / provenance").fill("https://example.com/source-locator")
+  await page.getByRole("button", { name: "Add reply" }).click()
+  await expect(page.getByText(reply)).toBeVisible()
 })
 
 test("mobile community keeps essential status visible without horizontal overflow", async ({ page }) => {
@@ -46,4 +54,12 @@ test("mobile community keeps essential status visible without horizontal overflo
   await expect(page.getByText(/case unresolved/i)).toBeVisible()
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
   expect(overflow).toBeFalsy()
+})
+
+test("semantic loading and failure states stay distinct", async ({ page }) => {
+  await page.goto("/community/system-states")
+  await expect(page.getByText("Loading", { exact: true }).first()).toBeVisible()
+  await expect(page.getByText("Error", { exact: true }).first()).toBeVisible()
+  await expect(page.getByText("Backend offline", { exact: true }).first()).toBeVisible()
+  await expect(page.getByText("Empty", { exact: true }).first()).toBeVisible()
 })
