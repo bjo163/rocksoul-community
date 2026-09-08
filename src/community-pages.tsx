@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react"
+import { useMemo, useState, type FormEvent, type ReactNode } from "react"
 import {
   AuthScreen,
   Badge,
@@ -50,7 +50,7 @@ function PageIntro({
   eyebrow: string
   title: string
   copy: string
-  action?: React.ReactNode
+  action?: ReactNode
 }) {
   return (
     <header className="community-page-intro">
