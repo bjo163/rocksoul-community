@@ -14,6 +14,7 @@ import {
   AuthPage,
   CommunityCasePage,
   CommunityHomePage,
+  CommunityStatesPage,
   NotificationsPage,
   NotFoundPage,
   ProfilePage,
@@ -119,7 +120,17 @@ function App() {
       page = <ThreadsPage state={store.state} navigate={navigate} />
       break
     case "thread":
-      page = <ThreadPage threadId={route.threadId} state={store.state} navigate={navigate} />
+      page = (
+        <ThreadPage
+          threadId={route.threadId}
+          state={store.state}
+          navigate={navigate}
+          onReply={(body, source) => {
+            store.addReply(route.threadId, body, source)
+            setNotice("Reply added as attributed community discussion.")
+          }}
+        />
+      )
       break
     case "saved":
       page = <SavedPage state={store.state} navigate={navigate} />
@@ -159,6 +170,9 @@ function App() {
       break
     case "auth":
       page = <AuthPage navigate={navigate} />
+      break
+    case "states":
+      page = <CommunityStatesPage />
       break
     case "not-found":
       page = <NotFoundPage pathname={route.pathname} navigate={navigate} />
