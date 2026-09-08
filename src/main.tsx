@@ -2,129 +2,32 @@ import { StrictMode, useEffect, useMemo, useState } from "react"
 import { createRoot } from "react-dom/client"
 import {
   ApplicationActionsProvider,
-  AuthScreen,
-  Button,
-  CaseHeader,
-  CommunityCaseThreadPattern,
-  MetricTile,
+  MOONWITNESS_STABLE_REPOSITORY_BASE,
   MoonWitnessAssetProvider,
-  MoonWitnessBrand,
-  MoonWitnessPersonaAvatar,
-  MoonWitnessStatusAsset,
-  MWHeader,
-  mw0042,
   type ApplicationActions,
 } from "@rocksoul/ui"
 import "@rocksoul/ui/styles.css"
 import "./styles.css"
+import { useCommunityStore } from "./community-store"
+import { resolveCommunityRoute } from "./router"
+import {
+  AuthPage,
+  CommunityCasePage,
+  CommunityHomePage,
+  NotificationsPage,
+  NotFoundPage,
+  ProfilePage,
+  ProposalsPage,
+  SavedPage,
+  ThreadPage,
+  ThreadsPage,
+  type Navigate,
+} from "./community-pages"
 
-const ASSET_BASE = "https://raw.githubusercontent.com/bjo163/rocksoul-assets/main"
-
-function routeFor(pathname: string) {
-  if (pathname === "/auth" || pathname === "/login") return "auth"
-  return "community"
-}
-
-function CommunityPage({
-  navigate,
-  notify,
-}: {
-  navigate: (path: string) => void
-  notify: (message: string) => void
-}) {
-  return (
-    <div id="top" className="community-surface bg-background text-foreground">
-      <MWHeader caseId={mw0042.caseId} surface="community" />
-
-      <main className="mw-shell-wide py-10 sm:py-12">
-        <div className="community-context-row">
-          <p className="mw-meta text-muted-foreground">PARTICIPATION LAYER / SOURCE-AWARE COLLABORATION</p>
-          <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
-            Sign in
-          </Button>
-        </div>
-
-        <CaseHeader
-          caseId={mw0042.caseId}
-          eyebrow="13 / Community / MW-0042"
-          title={mw0042.title}
-          summary="Ask, follow, save, and submit context without mutating canonical evidence."
-          status={mw0042.status}
-          variant="community"
-          actions={
-            <>
-              <Button variant="secondary" onClick={() => notify("Following MW-0042 in the UI demo.")}>
-                Follow
-              </Button>
-              <Button variant="ghost" onClick={() => notify("Saved MW-0042 in the UI demo.")}>
-                Save
-              </Button>
-            </>
-          }
-        />
-
-        <div className="mt-8 grid gap-5 lg:grid-cols-[1.4fr_.7fr]">
-          <CommunityCaseThreadPattern
-            question="If the person match is partial, why is the overall correlation still high?"
-            moderatorNote="Temporal and source-independence dimensions are strong. Identity remains a blocking uncertainty and is shown separately."
-            submission={mw0042.community.submission}
-          />
-
-          <aside className="grid content-start gap-4">
-            <div className="grid grid-cols-3 gap-3">
-              <MetricTile label="Following" value={String(mw0042.community.following)} context="members" />
-              <MetricTile label="Saved" value={String(mw0042.community.saved)} context="case saves" />
-              <MetricTile label="Discussion" value={String(mw0042.community.discussions)} context="threads" />
-            </div>
-
-            <section className="community-member-card" aria-label="Community identity">
-              <MoonWitnessPersonaAvatar
-                persona="community-member"
-                alt="MoonWitness community member"
-                className="community-member-avatar"
-              />
-              <div>
-                <p className="mw-eyebrow text-warning">COMMUNITY IDENTITY</p>
-                <h2>Participation keeps provenance attached.</h2>
-                <p>
-                  Discussion can question, annotate, and propose. Review remains separate from the canonical record.
-                </p>
-              </div>
-            </section>
-
-            <section className="community-warning">
-              <div className="community-warning-icon">
-                <MoonWitnessStatusAsset status="needs-context" label="Needs context" />
-              </div>
-              <div>
-                <p className="mw-meta text-warning">SUB-0042-01 / NEEDS CONTEXT</p>
-                <p>
-                  Community submission ≠ canonical evidence. Provenance must survive review first.
-                </p>
-              </div>
-            </section>
-          </aside>
-        </div>
-      </main>
-    </div>
-  )
-}
-
-function AuthPage({ navigate }: { navigate: (path: string) => void }) {
-  return (
-    <div className="identity-surface bg-background text-foreground">
-      <header className="identity-utility mw-shell-wide">
-        <MoonWitnessBrand ecosystem subtitle="COMMUNITY / IDENTITY" />
-        <Button variant="ghost" onClick={() => navigate("/community/cases/mw-0042")}>
-          Back to community
-        </Button>
-      </header>
-      <AuthScreen />
-    </div>
-  )
-}
+const ASSET_BASE = `${MOONWITNESS_STABLE_REPOSITORY_BASE}/moonwitness`
 
 function App() {
+  const store = useCommunityStore()
   const [pathname, setPathname] = useState(() => window.location.pathname)
   const [notice, setNotice] = useState<string | null>(null)
 
@@ -136,48 +39,140 @@ function App() {
 
   useEffect(() => {
     if (!notice) return
-    const timeout = window.setTimeout(() => setNotice(null), 3200)
+    const timeout = window.setTimeout(() => setNotice(null), 3600)
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const navigate = (path: string) => {
+  const navigate: Navigate = (path) => {
     if (window.location.pathname !== path) {
       window.history.pushState({}, "", path)
       setPathname(path)
-      window.scrollTo({ top: 0, behavior: "smooth" })
     }
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const actions = useMemo<ApplicationActions>(
     () => ({
-      onCommunitySubmit: (payload) => {
-        setNotice(
-          payload.mode === "question"
-            ? "Question captured in the UI demo. No canonical record was changed."
-            : "Context captured in the UI demo. Review is still required.",
-        )
-      },
-      onAuthSubmit: () => {
-        setNotice("Authentication surface is wired. Connect the identity backend to enable real sign-in.")
+      onAuthSubmit: ({ email }) => {
+        store.authenticate(email)
+        setNotice("Compatibility session active. IAM authority remains in rocksoul-platform.")
+        navigate("/community")
       },
       onAuthProvider: () => {
-        setNotice("Provider sign-in is a UI demo until an identity backend is connected.")
+        store.authenticate("provider@rocksoul.community")
+        setNotice("Provider compatibility session active. Platform remains the identity authority.")
+        navigate("/community")
+      },
+      onSignOut: () => {
+        store.signOut()
+        setNotice("Community compatibility session ended.")
+      },
+      onMarkAllNotificationsRead: () => {
+        store.markAllRead()
+        setNotice("Notifications marked as read.")
+      },
+      onSaveProfile: ({ displayName }) => {
+        store.saveProfile(displayName, store.state.profile.bio)
+        setNotice("Community profile presentation updated.")
+      },
+      onCommunitySubmit: ({ mode, source, body }) => {
+        if (mode === "question") store.submitQuestion("MW-0042", body)
+        else store.submitContext("MW-0042", source, body)
       },
     }),
-    [],
+    [store.state.profile.bio],
   )
 
-  const route = routeFor(pathname)
+  const route = resolveCommunityRoute(pathname)
+  let page
+
+  switch (route.name) {
+    case "home":
+      page = <CommunityHomePage state={store.state} navigate={navigate} />
+      break
+    case "case":
+      page = (
+        <CommunityCasePage
+          caseId={route.caseId}
+          state={store.state}
+          navigate={navigate}
+          onToggleFollow={() => {
+            store.toggleFollow(route.caseId)
+            setNotice(store.state.followedCases.includes(route.caseId) ? "Case unfollowed." : "Case followed.")
+          }}
+          onToggleSaved={() => {
+            store.toggleSaved(route.caseId)
+            setNotice(store.state.savedCases.includes(route.caseId) ? "Case removed from saved." : "Case saved.")
+          }}
+          onQuestion={(body) => {
+            store.submitQuestion(route.caseId, body)
+            setNotice("Question added to discussion. Canonical evidence was not changed.")
+          }}
+          onContext={(source, body) => {
+            store.submitContext(route.caseId, source, body)
+            setNotice(source ? "Context submitted as unverified." : "Context submitted as NEEDS CONTEXT.")
+          }}
+        />
+      )
+      break
+    case "threads":
+      page = <ThreadsPage state={store.state} navigate={navigate} />
+      break
+    case "thread":
+      page = <ThreadPage threadId={route.threadId} state={store.state} navigate={navigate} />
+      break
+    case "saved":
+      page = <SavedPage state={store.state} navigate={navigate} />
+      break
+    case "notifications":
+      page = <NotificationsPage state={store.state} onMarkAllRead={store.markAllRead} />
+      break
+    case "proposals":
+      page = (
+        <ProposalsPage
+          state={store.state}
+          authenticated={store.state.session.authenticated}
+          navigate={navigate}
+          onCreate={(title, body, source) => {
+            store.createProposal(title, body, source)
+            setNotice(source ? "Proposal created as draft." : "Proposal created as NEEDS CONTEXT.")
+          }}
+        />
+      )
+      break
+    case "profile":
+      page = (
+        <ProfilePage
+          state={store.state}
+          navigate={navigate}
+          onSave={(displayName, bio) => {
+            store.saveProfile(displayName, bio)
+            setNotice("Community profile saved.")
+          }}
+          onSignOut={() => {
+            store.signOut()
+            setNotice("Signed out of compatibility session.")
+            navigate("/community")
+          }}
+        />
+      )
+      break
+    case "auth":
+      page = <AuthPage navigate={navigate} />
+      break
+    case "not-found":
+      page = <NotFoundPage pathname={route.pathname} navigate={navigate} />
+      break
+  }
 
   return (
     <MoonWitnessAssetProvider baseUrl={ASSET_BASE}>
       <ApplicationActionsProvider actions={actions}>
-        {route === "auth" ? (
-          <AuthPage navigate={navigate} />
-        ) : (
-          <CommunityPage navigate={navigate} notify={setNotice} />
-        )}
-
+        {page}
+        <nav className="community-utility-nav" aria-label="Community utilities">
+          <a href="/community/notifications" aria-label="Notifications">Notifications</a>
+          <a href="/community/profile" aria-label="Profile">Profile</a>
+        </nav>
         {notice ? (
           <div className="community-toast" role="status" aria-live="polite">
             <span className="community-toast-dot" aria-hidden="true" />
