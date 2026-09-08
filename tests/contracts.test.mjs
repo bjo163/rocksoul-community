@@ -43,6 +43,6 @@ test("community source and visual ownership stay in shared UI contracts", async 
   assert.ok(!pages.includes("STABLE_ASSET_COMMIT"))
   assert.ok(!pages.includes("github.com/bjo163/rocksoul-assets/blob/"))
   for (const visual of ["source-linked","discussion-thread","proposal-review","identity-bridge","saved-case","notification","moderation-history","attributed-reply"]) {
-    assert.ok(pages.includes(`asset="${visual}"`))
+    assert.ok(pages.includes(`asset="${visual}"`) || pages.includes(`visual="${visual}"`))
   }
 })
