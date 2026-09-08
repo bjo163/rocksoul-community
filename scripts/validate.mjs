@@ -33,11 +33,12 @@ for (const route of [
   "/community/proposals",
   "/community/profile",
   "/auth",
+  "/community/system-states",
 ]) {
   assert.ok(router.includes(route), `missing route contract: ${route}`)
 }
 
-for (const surface of ["CommunityHomePage", "CommunityCasePage", "ThreadsPage", "SavedPage", "NotificationsPage", "ProposalsPage", "ProfilePage", "AuthPage", "NotFoundPage"]) {
+for (const surface of ["CommunityHomePage", "CommunityCasePage", "ThreadsPage", "SavedPage", "NotificationsPage", "ProposalsPage", "ProfilePage", "AuthPage", "CommunityStatesPage", "NotFoundPage"]) {
   assert.ok(pages.includes(`function ${surface}`) || pages.includes(`function ${surface}(`), `missing surface: ${surface}`)
 }
 
