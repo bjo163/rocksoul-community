@@ -36,7 +36,7 @@ function CommunityHeader({ caseId }: { caseId?: string }) {
       surface="community"
       homeHref="/community"
       searchHref="/community#search"
-      navigation={communityNavigation}
+      navItems={communityNavigation}
     />
   )
 }
