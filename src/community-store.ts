@@ -25,7 +25,14 @@ function loadState(): CommunityState {
       profile: { ...defaultCommunityState.profile, ...parsed.profile },
       followedCases: Array.isArray(parsed.followedCases) ? parsed.followedCases : [],
       savedCases: Array.isArray(parsed.savedCases) ? parsed.savedCases : [],
-      threads: Array.isArray(parsed.threads) ? parsed.threads : cloneDefaultState().threads,
+      threads: Array.isArray(parsed.threads)
+        ? parsed.threads.map((thread) => ({
+            ...thread,
+            history: Array.isArray(thread.history)
+              ? thread.history
+              : [{ action: "created" as const, at: thread.timestamp ?? "unknown", actor: thread.author ?? "community member" }],
+          }))
+        : cloneDefaultState().threads,
       comments: Array.isArray(parsed.comments) ? parsed.comments : cloneDefaultState().comments,
       submissions: Array.isArray(parsed.submissions) ? parsed.submissions : cloneDefaultState().submissions,
       proposals: Array.isArray(parsed.proposals) ? parsed.proposals : cloneDefaultState().proposals,
