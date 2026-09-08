@@ -34,3 +34,15 @@ test("community discussion preserves comments, history and moderation state", as
   assert.ok(pages.includes("SourceLocator"))
   assert.ok(pages.includes("CommunityStatesPage"))
 })
+
+
+test("community source and visual ownership stay in shared UI contracts", async () => {
+  const pages = await readFile("src/community-pages.tsx", "utf8")
+  assert.ok(pages.includes("CommunitySourceLocatorLink"))
+  assert.ok(pages.includes("MoonWitnessCommunityParticipationAsset"))
+  assert.ok(!pages.includes("STABLE_ASSET_COMMIT"))
+  assert.ok(!pages.includes("github.com/bjo163/rocksoul-assets/blob/"))
+  for (const visual of ["source-linked","discussion-thread","proposal-review","identity-bridge","saved-case","notification","moderation-history","attributed-reply"]) {
+    assert.ok(pages.includes(`asset="${visual}"`) || pages.includes(`visual="${visual}"`))
+  }
+})

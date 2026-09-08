@@ -125,3 +125,8 @@ GitHub Actions validates the contract/build on every push and runs Playwright ag
 `COMMUNITY / MoonWitness × Rocksoul`
 
 </div>
+
+
+## Participation visual contract
+
+Community participation visuals are owned upstream by `rocksoul-assets` and consumed through typed `@rocksoul/ui` components. The application renders dedicated semantics for source linkage, discussion, proposal review, identity bridging, saved cases, notifications, moderation history, and attributed replies. Source locators are resolved by the shared UI ecosystem-link contract; this repository does not carry a duplicate Rocksoul asset SHA or GitHub source URL.
