@@ -35,14 +35,14 @@ test("member can sign in, follow, save, ask and submit context", async ({ page }
   await page.getByLabel("Source / provenance").fill("SRC-COMMUNITY-E2E")
   await page.getByLabel("Context").fill(context)
   await page.getByRole("button", { name: "Submit context" }).click()
-  await expect(page.getByText(context)).toBeVisible()
+  await expect(page.getByRole("paragraph").filter({ hasText: context })).toBeVisible()
   await expect(page.getByText("unverified", { exact: true }).first()).toBeVisible()
 })
 
 test("mobile community keeps essential status visible without horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/community/cases/mw-0042")
-  await expect(page.getByText("MW-0042").first()).toBeVisible()
+  await expect(page.getByText("13 / Community / MW-0042", { exact: true })).toBeVisible()
   await expect(page.getByText(/case unresolved/i)).toBeVisible()
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
   expect(overflow).toBeFalsy()
