@@ -1,0 +1,49 @@
+import { expect, test } from "@playwright/test"
+
+test.beforeEach(async ({ page }) => {
+  await page.goto("/community")
+  await page.evaluate(() => localStorage.clear())
+  await page.reload()
+})
+
+test("community home exposes real routes and unknown paths show 404", async ({ page }) => {
+  await expect(page.getByRole("heading", { name: /Discuss the record/i })).toBeVisible()
+  await page.goto("/this-route-does-not-exist")
+  await expect(page.getByText("404 / COMMUNITY ROUTE")).toBeVisible()
+  await expect(page.getByRole("heading", { name: /Nothing is silently mapped here/i })).toBeVisible()
+})
+
+test("member can sign in, follow, save, ask and submit context", async ({ page }) => {
+  await page.goto("/auth")
+  await page.getByLabel("Email").fill("member@example.com")
+  await page.getByLabel("Password").fill("fixture-password")
+  await page.getByRole("button", { name: "Continue", exact: true }).click()
+  await expect(page).toHaveURL(/\/community$/)
+
+  await page.goto("/community/cases/mw-0042")
+  await page.getByRole("button", { name: "Follow", exact: true }).click()
+  await expect(page.getByRole("button", { name: "Following", exact: true })).toBeVisible()
+  await page.getByRole("button", { name: "Save", exact: true }).click()
+  await expect(page.getByRole("button", { name: "Saved", exact: true })).toBeVisible()
+
+  const question = "What source would reduce the remaining identity uncertainty?"
+  await page.getByLabel("Question").fill(question)
+  await page.getByRole("button", { name: "Ask question" }).click()
+  await expect(page.getByText(question)).toBeVisible()
+
+  const context = "A source-linked timeline note that still needs review."
+  await page.getByLabel("Source / provenance").fill("SRC-COMMUNITY-E2E")
+  await page.getByLabel("Context").fill(context)
+  await page.getByRole("button", { name: "Submit context" }).click()
+  await expect(page.getByText(context)).toBeVisible()
+  await expect(page.getByText("unverified", { exact: true }).first()).toBeVisible()
+})
+
+test("mobile community keeps essential status visible without horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto("/community/cases/mw-0042")
+  await expect(page.getByText("MW-0042").first()).toBeVisible()
+  await expect(page.getByText(/case unresolved/i)).toBeVisible()
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
+  expect(overflow).toBeFalsy()
+})
