@@ -14,6 +14,7 @@ import {
   MWHeader,
   NotificationItem,
   SubmissionCard,
+  StatePanel,
   Textarea,
   mw0042,
 } from "@rocksoul/ui"
@@ -38,6 +39,33 @@ function CommunityHeader({ caseId }: { caseId?: string }) {
       searchHref="/community#search"
       navItems={communityNavigation}
     />
+  )
+}
+
+
+const STABLE_ASSET_COMMIT = "82f20b8a361a19abdc6591fe2f4c67e3fb9d4b05"
+
+function sourceLocatorHref(source?: string) {
+  if (!source) return null
+  if (/^https?:\/\//.test(source)) return source
+  if (source.includes("MW-0042")) {
+    return `https://github.com/bjo163/rocksoul-assets/blob/${STABLE_ASSET_COMMIT}/penpot/golden-cases/mw-0042/SCREEN-CONTRACT.md`
+  }
+  if (source.startsWith("COMMUNITY-")) {
+    return "https://github.com/bjo163/rocksoul-community/blob/main/README.md"
+  }
+  return null
+}
+
+function SourceLocator({ source }: { source?: string }) {
+  const href = sourceLocatorHref(source)
+  if (!source) return <span className="community-source-missing">No source attached</span>
+  return href ? (
+    <a className="community-source-link" href={href} target="_blank" rel="noreferrer">
+      {source} <span aria-hidden="true">↗</span>
+    </a>
+  ) : (
+    <code className="community-source-code">{source}</code>
   )
 }
 
@@ -335,13 +363,19 @@ export function ThreadPage({
   threadId,
   state,
   navigate,
+  onReply,
 }: {
   threadId: string
   state: CommunityState
   navigate: Navigate
+  onReply: (body: string, source?: string) => void
 }) {
+  const [reply, setReply] = useState("")
+  const [source, setSource] = useState("")
   const thread = state.threads.find((item) => item.id === threadId)
   if (!thread) return <NotFoundPage pathname={`/community/threads/${threadId}`} navigate={navigate} />
+
+  const comments = state.comments.filter((item) => item.threadId === threadId)
 
   return (
     <div className="community-surface">
@@ -366,9 +400,68 @@ export function ThreadPage({
           <dl className="community-provenance-dl">
             <div><dt>Attribution</dt><dd>{thread.author}</dd></div>
             <div><dt>Moderation</dt><dd>{thread.state}</dd></div>
-            <div><dt>Source</dt><dd>{thread.source ?? "No source attached"}</dd></div>
+            <div><dt>Source</dt><dd><SourceLocator source={thread.source} /></dd></div>
             <div><dt>Canonical</dt><dd>NO — COMMUNITY DISCUSSION</dd></div>
           </dl>
+
+          <section className="community-history" aria-label="Edit and moderation history">
+            <p className="mw-meta text-muted-foreground">EDIT / MODERATION HISTORY</p>
+            <ol>
+              {thread.history.map((event, index) => (
+                <li key={`${event.action}-${event.at}-${index}`}>
+                  <span>{event.action.replaceAll("-", " ")}</span>
+                  <strong>{event.actor}</strong>
+                  <time>{event.at}</time>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section className="community-replies" aria-label="Thread replies">
+            <div className="community-thread-heading">
+              <div>
+                <p className="mw-meta text-muted-foreground">REPLIES / {comments.length}</p>
+                <h2>Attributed responses</h2>
+              </div>
+            </div>
+            {comments.map((comment) => (
+              <DiscussionItem
+                key={comment.id}
+                kind="comment"
+                author={comment.author}
+                role={comment.role}
+                timestamp={comment.timestamp}
+                body={comment.body}
+                replies={0}
+                state={comment.state}
+                actions={comment.source ? <SourceLocator source={comment.source} /> : undefined}
+              />
+            ))}
+          </section>
+
+          {state.session.authenticated ? (
+            <form
+              className="community-reply-form"
+              onSubmit={(event) => {
+                event.preventDefault()
+                if (!reply.trim()) return
+                onReply(reply.trim(), source.trim() || undefined)
+                setReply("")
+                setSource("")
+              }}
+            >
+              <p className="mw-eyebrow text-info">REPLY TO THREAD</p>
+              <Textarea label="Reply" value={reply} onChange={(event) => setReply(event.currentTarget.value)} maxLength={600} characterCount required />
+              <Input label="Source / provenance" value={source} onChange={(event) => setSource(event.currentTarget.value)} placeholder="Optional source ID, locator, or URL" />
+              <Button type="submit" disabled={!reply.trim()}>Add reply</Button>
+            </form>
+          ) : (
+            <div className="community-signin-gate mt-5">
+              <p className="mw-eyebrow text-primary">MEMBER ACTION</p>
+              <h3>Sign in to reply.</h3>
+              <Button onClick={() => navigate("/auth")}>Sign in</Button>
+            </div>
+          )}
         </section>
       </main>
     </div>
@@ -579,6 +672,28 @@ export function AuthPage({ navigate }: { navigate: Navigate }) {
           Local compatibility mode is active for this frontend reference implementation. It is intentionally not an IAM authority.
         </p>
       ) : null}
+    </div>
+  )
+}
+
+
+export function CommunityStatesPage() {
+  return (
+    <div className="community-surface">
+      <CommunityHeader />
+      <main className="mw-shell-wide py-10">
+        <PageIntro
+          eyebrow="COMMUNITY / SEMANTIC STATES"
+          title="Failure is a state, not a conclusion."
+          copy="Loading, offline, error, and empty states preserve the difference between connectivity, query failure, and absence of community content."
+        />
+        <section className="community-state-grid mt-6">
+          <StatePanel state="loading" />
+          <StatePanel state="error" traceId="COMMUNITY-DEMO-ERROR" />
+          <StatePanel state="offline" lastKnownState="Local community snapshot remains readable." />
+          <StatePanel state="empty" />
+        </section>
+      </main>
     </div>
   )
 }
