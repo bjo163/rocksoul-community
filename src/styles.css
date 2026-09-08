@@ -85,9 +85,9 @@ textarea {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr);
   gap: 0.9rem;
-  border: 1px solid var(--mw-warning);
+  border: 1px solid var(--mw-status-partial);
   padding: 1rem;
-  background: color-mix(in srgb, var(--mw-warning) 5%, var(--mw-surface-page));
+  background: color-mix(in srgb, var(--mw-status-partial) 5%, var(--mw-surface-page));
 }
 
 .community-warning-icon {
