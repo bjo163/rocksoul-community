@@ -1,0 +1,48 @@
+import assert from "node:assert/strict"
+import { readFile } from "node:fs/promises"
+
+const [pkgRaw, main, pages, router, identity, readme] = await Promise.all([
+  readFile("package.json", "utf8"),
+  readFile("src/main.tsx", "utf8"),
+  readFile("src/community-pages.tsx", "utf8"),
+  readFile("src/router.ts", "utf8"),
+  readFile("src/identity.ts", "utf8"),
+  readFile("README.md", "utf8"),
+])
+
+const pkg = JSON.parse(pkgRaw)
+assert.match(pkg.dependencies["@rocksoul/ui"], /^github:bjo163\/rocksoul-ui#[0-9a-f]{40}$/)
+assert.equal(pkg.engines.node, "22.x")
+assert.ok(main.includes("MOONWITNESS_STABLE_REPOSITORY_BASE"))
+assert.ok(!main.includes("rocksoul-assets/main"))
+assert.ok(!pages.includes("#method"))
+assert.ok(!pages.includes("#case"))
+assert.ok(pages.includes('navigation={communityNavigation}'))
+assert.ok(identity.includes("VITE_ROCKSOUL_PLATFORM_IDENTITY_URL"))
+
+for (const route of [
+  "/community",
+  "/community/cases/",
+  "/community/threads/",
+  "/community/saved",
+  "/community/notifications",
+  "/community/proposals",
+  "/community/profile",
+  "/auth",
+]) {
+  assert.ok(router.includes(route), `missing route contract: ${route}`)
+}
+
+for (const surface of ["CommunityHomePage", "CommunityCasePage", "ThreadsPage", "SavedPage", "NotificationsPage", "ProposalsPage", "ProfilePage", "AuthPage", "NotFoundPage"]) {
+  assert.ok(pages.includes(`function ${surface}`) || pages.includes(`function ${surface}(`), `missing surface: ${surface}`)
+}
+
+for (const boundary of [
+  "discussion ≠ evidence",
+  "proposal ≠ canonical record",
+  "authentication compatibility ≠ IAM ownership",
+]) {
+  assert.ok(readme.toLowerCase().includes(boundary.toLowerCase()), `README missing boundary: ${boundary}`)
+}
+
+console.log("rocksoul-community contract validation passed")
