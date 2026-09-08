@@ -26,7 +26,7 @@ assert.ok(pages.includes("CommunitySourceLocatorLink"))
 assert.ok(!pages.includes("STABLE_ASSET_COMMIT"))
 assert.ok(!pages.includes("github.com/bjo163/rocksoul-assets/blob/"))
 for (const visual of ["source-linked","discussion-thread","proposal-review","identity-bridge","saved-case","notification","moderation-history","attributed-reply"]) {
-  assert.ok(pages.includes(`asset="${visual}"`), `missing participation visual: ${visual}`)
+  assert.ok(pages.includes(`asset="${visual}"`) || pages.includes(`visual="${visual}"`), `missing participation visual: ${visual}`)
 }
 assert.ok(identity.includes("VITE_ROCKSOUL_PLATFORM_IDENTITY_URL"))
 
