@@ -12,7 +12,7 @@ const [pkgRaw, main, pages, router, identity, readme] = await Promise.all([
 
 const pkg = JSON.parse(pkgRaw)
 assert.match(pkg.dependencies["@rocksoul/ui"], /^github:bjo163\/rocksoul-ui#[0-9a-f]{40}$/)
-assert.equal(pkg.engines.node, "22.x")
+assert.equal(pkg.engines.node, "24.x")
 assert.ok(main.includes("MOONWITNESS_STABLE_REPOSITORY_BASE"))
 assert.ok(!main.includes("rocksoul-assets/main"))
 assert.ok(!pages.includes("#method"))
