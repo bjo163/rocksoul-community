@@ -749,3 +749,127 @@ textarea {
     gap: .3rem;
   }
 }
+
+
+/* Community participation visual grammar — sourced from @rocksoul/ui / rocksoul-assets. */
+.community-home-side {
+  display: grid;
+  gap: 1rem;
+}
+
+.community-home-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.community-participation-visual {
+  margin: 0;
+  border: 1px solid var(--mw-border-default);
+  background: var(--mw-surface-panel);
+  padding: .8rem;
+}
+
+.community-participation-visual img {
+  display: block;
+  width: 100%;
+  height: 126px;
+  object-fit: contain;
+}
+
+.community-participation-visual figcaption {
+  margin-top: .55rem;
+  color: var(--mw-text-secondary);
+  font: 700 .62rem/1.4 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.community-participation-visual.compact {
+  width: 120px;
+  padding: .55rem;
+}
+
+.community-participation-visual.compact img {
+  height: 64px;
+}
+
+.community-participation-visual.compact figcaption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.community-page-intro-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.community-page-intro-side {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  gap: .75rem;
+}
+
+.community-heading-with-visual {
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+}
+
+.community-heading-with-visual > img {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.community-heading-with-visual.compact {
+  align-items: center;
+}
+
+.community-heading-with-visual.compact > img {
+  width: 40px;
+  height: 40px;
+}
+
+.community-list-attribution {
+  display: grid;
+  gap: .3rem;
+}
+
+.identity-boundary-visual {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+@media (max-width: 720px) {
+  .community-page-intro-side {
+    width: 100%;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+
+  .community-home-visual-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .community-home-visual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .community-page-intro-side {
+    flex-direction: column;
+  }
+
+  .community-participation-visual.compact {
+    width: 100%;
+  }
+}

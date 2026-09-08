@@ -5,10 +5,12 @@ import {
   Button,
   CaseHeader,
   CommunityComposer,
+  CommunitySourceLocatorLink,
   DiscussionItem,
   Input,
   MetricTile,
   MoonWitnessBrand,
+  MoonWitnessCommunityParticipationAsset,
   MoonWitnessPersonaAvatar,
   MoonWitnessStatusAsset,
   MWHeader,
@@ -17,6 +19,7 @@ import {
   StatePanel,
   Textarea,
   mw0042,
+  type CommunityParticipationAssetId,
 } from "@rocksoul/ui"
 import { communityCase, type CommunityState, type CommunityThread } from "./community-data"
 import { buildPlatformIdentityUrl, PLATFORM_IDENTITY_URL } from "./identity"
@@ -43,29 +46,16 @@ function CommunityHeader({ caseId }: { caseId?: string }) {
 }
 
 
-const STABLE_ASSET_COMMIT = "82f20b8a361a19abdc6591fe2f4c67e3fb9d4b05"
-
-function sourceLocatorHref(source?: string) {
-  if (!source) return null
-  if (/^https?:\/\//.test(source)) return source
-  if (source.includes("MW-0042")) {
-    return `https://github.com/bjo163/rocksoul-assets/blob/${STABLE_ASSET_COMMIT}/penpot/golden-cases/mw-0042/SCREEN-CONTRACT.md`
-  }
-  if (source.startsWith("COMMUNITY-")) {
-    return "https://github.com/bjo163/rocksoul-community/blob/main/README.md"
-  }
-  return null
+function SourceLocator({ source }: { source?: string }) {
+  return <CommunitySourceLocatorLink source={source} className={source ? "community-source-link" : "community-source-missing"} />
 }
 
-function SourceLocator({ source }: { source?: string }) {
-  const href = sourceLocatorHref(source)
-  if (!source) return <span className="community-source-missing">No source attached</span>
-  return href ? (
-    <a className="community-source-link" href={href} target="_blank" rel="noreferrer">
-      {source} <span aria-hidden="true">↗</span>
-    </a>
-  ) : (
-    <code className="community-source-code">{source}</code>
+function ParticipationVisual({ asset, label, compact = false }: { asset: CommunityParticipationAssetId; label: string; compact?: boolean }) {
+  return (
+    <figure className={compact ? "community-participation-visual compact" : "community-participation-visual"}>
+      <MoonWitnessCommunityParticipationAsset asset={asset} alt={label} />
+      <figcaption>{label}</figcaption>
+    </figure>
   )
 }
 
@@ -74,20 +64,25 @@ function PageIntro({
   title,
   copy,
   action,
+  visual,
 }: {
   eyebrow: string
   title: string
   copy: string
   action?: ReactNode
+  visual?: CommunityParticipationAssetId
 }) {
   return (
     <header className="community-page-intro">
-      <div>
+      <div className="community-page-intro-copy">
         <p className="mw-eyebrow text-primary">{eyebrow}</p>
         <h1>{title}</h1>
         <p>{copy}</p>
       </div>
-      {action ? <div className="community-page-action">{action}</div> : null}
+      <div className="community-page-intro-side">
+        {visual ? <ParticipationVisual asset={visual} label={title} compact /> : null}
+        {action ? <div className="community-page-action">{action}</div> : null}
+      </div>
     </header>
   )
 }
@@ -107,7 +102,10 @@ function ThreadRow({ thread, navigate }: { thread: CommunityThread; navigate: Na
       <h2>{thread.title}</h2>
       <p>{thread.body}</p>
       <div className="community-list-footer">
-        <span className="mw-meta text-muted-foreground">{thread.author} · {thread.role} · {thread.timestamp}</span>
+        <div className="community-list-attribution">
+          <span className="mw-meta text-muted-foreground">{thread.author} · {thread.role} · {thread.timestamp}</span>
+          {thread.source ? <SourceLocator source={thread.source} /> : null}
+        </div>
         <Button size="sm" variant="ghost" onClick={() => navigate(`/community/threads/${encodeURIComponent(thread.id)}`)}>
           Open thread
         </Button>
@@ -150,7 +148,12 @@ export function CommunityHomePage({
               <Button variant="secondary" onClick={() => navigate("/community/threads")}>Browse threads</Button>
             </div>
           </div>
-          <aside className="community-home-identity">
+          <aside className="community-home-side">
+            <div className="community-home-visual-grid" aria-label="Community participation visual grammar">
+              <ParticipationVisual asset="source-linked" label="Source-linked participation" />
+              <ParticipationVisual asset="identity-bridge" label="Platform identity bridge" />
+            </div>
+            <div className="community-home-identity">
             <MoonWitnessPersonaAvatar persona="community-member" alt="Community member" className="community-home-avatar" />
             <div>
               <p className="mw-meta text-warning">IDENTITY BOUNDARY</p>
@@ -159,6 +162,7 @@ export function CommunityHomePage({
               <Button size="sm" variant="ghost" onClick={() => navigate(state.session.authenticated ? "/community/profile" : "/auth")}>
                 {state.session.authenticated ? "View profile" : "Sign in"}
               </Button>
+            </div>
             </div>
           </aside>
         </section>
@@ -194,7 +198,7 @@ export function CommunityHomePage({
         </section>
 
         <section className="community-boundary-strip">
-          <MoonWitnessStatusAsset status="source-linked" label="Source-linked participation" />
+          <MoonWitnessCommunityParticipationAsset asset="source-linked" alt="Source-linked participation" />
           <div>
             <p className="mw-meta text-success">PARTICIPATE WITHOUT LOSING PROVENANCE</p>
             <p>Discussion ≠ evidence · popularity ≠ validity · proposal ≠ canonical record.</p>
@@ -258,9 +262,12 @@ export function CommunityCasePage({
         <div className="mt-8 grid gap-5 lg:grid-cols-[1.4fr_.7fr]">
           <section className="community-case-thread" aria-label="Community case thread">
             <div className="community-thread-heading">
-              <div>
+              <div className="community-heading-with-visual">
+                <MoonWitnessCommunityParticipationAsset asset="discussion-thread" alt="" aria-hidden="true" />
+                <div>
                 <p className="mw-meta text-muted-foreground">THREAD / {threads.length} DISCUSSIONS</p>
                 <h2>Discuss without mutating the record.</h2>
+                </div>
               </div>
               <Badge variant="unresolved">case unresolved</Badge>
             </div>
@@ -275,7 +282,7 @@ export function CommunityCasePage({
                   body={thread.body}
                   replies={thread.replies}
                   state={thread.state}
-                  actions={thread.source ? <Badge variant="neutral">source · {thread.source}</Badge> : undefined}
+                  actions={thread.source ? <SourceLocator source={thread.source} /> : undefined}
                 />
               </div>
             ))}
@@ -323,7 +330,7 @@ export function CommunityCasePage({
 
             <section className="community-warning">
               <div className="community-warning-icon">
-                <MoonWitnessStatusAsset status="needs-context" label="Needs context" />
+                <MoonWitnessCommunityParticipationAsset asset="proposal-review" alt="Proposal review boundary" />
               </div>
               <div>
                 <p className="mw-meta text-warning">SUBMISSION BOUNDARY</p>
@@ -347,7 +354,7 @@ export function ThreadsPage({ state, navigate }: { state: CommunityState; naviga
     <div className="community-surface">
       <CommunityHeader />
       <main className="mw-shell-wide py-10">
-        <PageIntro eyebrow="COMMUNITY / THREADS" title="Discussion stays attributable." copy="Questions, comments, and community notes remain distinct from canonical research records." />
+        <PageIntro eyebrow="COMMUNITY / THREADS" title="Discussion stays attributable." copy="Questions, comments, and community notes remain distinct from canonical research records." visual="discussion-thread" />
         <div className="community-search-field community-search-wide">
           <Input label="Filter threads" variant="search" value={filter} onChange={(event) => setFilter(event.currentTarget.value)} placeholder="Case, title, source…" />
         </div>
@@ -386,6 +393,7 @@ export function ThreadPage({
           title={thread.title}
           copy="This page is a community discussion surface. Its content is not a canonical research record."
           action={<Button variant="ghost" onClick={() => navigate("/community/threads")}>All threads</Button>}
+          visual="attributed-reply"
         />
         <section className="community-thread-detail">
           <DiscussionItem
@@ -405,7 +413,10 @@ export function ThreadPage({
           </dl>
 
           <section className="community-history" aria-label="Edit and moderation history">
-            <p className="mw-meta text-muted-foreground">EDIT / MODERATION HISTORY</p>
+            <div className="community-heading-with-visual compact">
+              <MoonWitnessCommunityParticipationAsset asset="moderation-history" alt="" aria-hidden="true" />
+              <p className="mw-meta text-muted-foreground">EDIT / MODERATION HISTORY</p>
+            </div>
             <ol>
               {thread.history.map((event, index) => (
                 <li key={`${event.action}-${event.at}-${index}`}>
@@ -419,9 +430,12 @@ export function ThreadPage({
 
           <section className="community-replies" aria-label="Thread replies">
             <div className="community-thread-heading">
-              <div>
+              <div className="community-heading-with-visual">
+                <MoonWitnessCommunityParticipationAsset asset="attributed-reply" alt="" aria-hidden="true" />
+                <div>
                 <p className="mw-meta text-muted-foreground">REPLIES / {comments.length}</p>
                 <h2>Attributed responses</h2>
+                </div>
               </div>
             </div>
             {comments.map((comment) => (
@@ -474,7 +488,7 @@ export function SavedPage({ state, navigate }: { state: CommunityState; navigate
     <div className="community-surface">
       <CommunityHeader />
       <main className="mw-shell-wide py-10">
-        <PageIntro eyebrow="COMMUNITY / SAVED" title="Your saved case references." copy="Saving changes your community workspace only; it does not change case status or research validity." />
+        <PageIntro eyebrow="COMMUNITY / SAVED" title="Your saved case references." copy="Saving changes your community workspace only; it does not change case status or research validity." visual="saved-case" />
         {saved ? (
           <article className="community-list-card mt-6">
             <div className="community-list-topline"><Badge variant="unresolved">{communityCase.status}</Badge><span className="mw-meta">SAVED</span></div>
@@ -511,6 +525,7 @@ export function NotificationsPage({
           title="Changes that need your attention."
           copy="Replies and review states are surfaced without implying verification."
           action={<Button variant="secondary" onClick={onMarkAllRead}>Mark all read</Button>}
+          visual="notification"
         />
         <section className="community-notification-list mt-6">
           {state.notifications.map((notification) => <NotificationItem key={notification.id} {...notification} />)}
@@ -548,7 +563,7 @@ export function ProposalsPage({
     <div className="community-surface">
       <CommunityHeader />
       <main className="mw-shell-wide py-10">
-        <PageIntro eyebrow="COMMUNITY / PROPOSALS" title="Propose. Then review." copy="A proposal is a participation object, not a canonical record. Source and moderation state remain visible." />
+        <PageIntro eyebrow="COMMUNITY / PROPOSALS" title="Propose. Then review." copy="A proposal is a participation object, not a canonical record. Source and moderation state remain visible." visual="proposal-review" />
         <div className="community-two-column mt-6">
           <section className="community-list">
             {state.proposals.map((proposal) => (
@@ -559,7 +574,7 @@ export function ProposalsPage({
                 </div>
                 <h2>{proposal.title}</h2>
                 <p>{proposal.body}</p>
-                <div className="community-proposal-source"><span>Source</span><strong>{proposal.source}</strong></div>
+                <div className="community-proposal-source"><span>Source</span><SourceLocator source={proposal.source} /></div>
               </article>
             ))}
           </section>
@@ -605,7 +620,7 @@ export function ProfilePage({
       <div className="community-surface">
         <CommunityHeader />
         <main className="mw-shell-wide py-10">
-          <PageIntro eyebrow="COMMUNITY / PUBLIC PROFILE" title="Profile presentation, not IAM authority." copy="Account, role, permission, and session authority belong to rocksoul-platform." />
+          <PageIntro eyebrow="COMMUNITY / PUBLIC PROFILE" title="Profile presentation, not IAM authority." copy="Account, role, permission, and session authority belong to rocksoul-platform." visual="identity-bridge" />
           <div className="community-signin-gate mt-6">
             <p className="mw-eyebrow text-primary">NO PARTICIPATION SESSION</p>
             <h3>Sign in to edit your community profile.</h3>
@@ -620,7 +635,7 @@ export function ProfilePage({
     <div className="community-surface">
       <CommunityHeader />
       <main className="mw-shell-wide py-10">
-        <PageIntro eyebrow="COMMUNITY / PUBLIC PROFILE" title={state.profile.displayName} copy="Public participation identity remains separate from canonical PERSON research records." />
+        <PageIntro eyebrow="COMMUNITY / PUBLIC PROFILE" title={state.profile.displayName} copy="Public participation identity remains separate from canonical PERSON research records." visual="identity-bridge" />
         <div className="community-profile-grid mt-6">
           <section className="community-profile-card">
             <MoonWitnessPersonaAvatar persona="community-member" alt="" className="community-profile-avatar" />
@@ -656,6 +671,7 @@ export function AuthPage({ navigate }: { navigate: Navigate }) {
         <Button variant="ghost" onClick={() => navigate("/community")}>Back to community</Button>
       </header>
       <section className="identity-boundary-note mw-shell-wide">
+        <MoonWitnessCommunityParticipationAsset asset="identity-bridge" alt="Community to Platform identity bridge" className="identity-boundary-visual" />
         <div>
           <p className="mw-meta text-info">IAM OWNER / ROCKSOUL-PLATFORM</p>
           <p>Community presents compatibility UX only. Account, session, role, and permission authority remain in Platform.</p>
@@ -686,6 +702,7 @@ export function CommunityStatesPage() {
           eyebrow="COMMUNITY / SEMANTIC STATES"
           title="Failure is a state, not a conclusion."
           copy="Loading, offline, error, and empty states preserve the difference between connectivity, query failure, and absence of community content."
+          visual="moderation-history"
         />
         <section className="community-state-grid mt-6">
           <StatePanel state="loading" />
