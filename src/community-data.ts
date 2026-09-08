@@ -2,6 +2,23 @@ export type ModerationState = "default" | "edited" | "reported" | "hidden"
 export type SubmissionState = "unverified" | "in-review" | "verified" | "rejected" | "needs-context"
 export type ProposalState = "draft" | "needs-context" | "in-review"
 
+export interface CommunityHistoryEvent {
+  action: "created" | "edited" | "reported" | "hidden" | "source-attached"
+  at: string
+  actor: string
+}
+
+export interface CommunityComment {
+  id: string
+  threadId: string
+  body: string
+  author: string
+  role: string
+  timestamp: string
+  state: ModerationState
+  source?: string
+}
+
 export interface CommunityThread {
   id: string
   caseId?: string
@@ -13,6 +30,7 @@ export interface CommunityThread {
   state: ModerationState
   replies: number
   source?: string
+  history: CommunityHistoryEvent[]
 }
 
 export interface CommunitySubmission {
@@ -61,6 +79,7 @@ export interface CommunityState {
   followedCases: string[]
   savedCases: string[]
   threads: CommunityThread[]
+  comments: CommunityComment[]
   submissions: CommunitySubmission[]
   proposals: CommunityProposal[]
   notifications: CommunityNotification[]
@@ -97,6 +116,10 @@ export const defaultCommunityState: CommunityState = {
       state: "default",
       replies: 1,
       source: "CASE/MW-0042",
+      history: [
+        { action: "created", at: "05:14", actor: "Member" },
+        { action: "source-attached", at: "05:15", actor: "Member" },
+      ],
     },
     {
       id: "thread-mw0042-moderator",
@@ -109,6 +132,7 @@ export const defaultCommunityState: CommunityState = {
       state: "default",
       replies: 0,
       source: "REVIEW/MW-0042",
+      history: [{ action: "created", at: "05:20", actor: "Moderator" }],
     },
     {
       id: "thread-provenance-first",
@@ -120,6 +144,37 @@ export const defaultCommunityState: CommunityState = {
       state: "edited",
       replies: 3,
       source: "COMMUNITY-RULES/PROVENANCE",
+      history: [
+        { action: "created", at: "05:52", actor: "Archivist" },
+        { action: "edited", at: "06:02", actor: "Archivist" },
+      ],
+    },
+    {
+      id: "thread-reported-example",
+      title: "Reported wording preserved as moderation state",
+      body: "This fixture proves that reported discussion remains visually distinct and does not become evidence.",
+      author: "Community Member",
+      role: "member",
+      timestamp: "06:18",
+      state: "reported",
+      replies: 0,
+      source: "COMMUNITY-MODERATION/STATE",
+      history: [
+        { action: "created", at: "06:14", actor: "Community Member" },
+        { action: "reported", at: "06:18", actor: "Moderator" },
+      ],
+    },
+  ],
+  comments: [
+    {
+      id: "comment-mw0042-01",
+      threadId: "thread-mw0042-identity",
+      body: "The aggregate is high because identity is only one dimension; it remains separately visible.",
+      author: "Moderator",
+      role: "moderator",
+      timestamp: "05:20",
+      state: "default",
+      source: "REVIEW/MW-0042",
     },
   ],
   submissions: [
