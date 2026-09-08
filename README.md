@@ -27,11 +27,12 @@ The application now provides:
 /community/notifications         reply/review/system notifications
 /community/proposals             source-aware proposals
 /community/profile               public participation profile
+/community/system-states         loading/error/offline/empty semantics
 /auth                            Platform identity compatibility bridge
 unknown routes                   explicit 404
 ```
 
-MW-0042 supports stateful **Follow**, **Save**, **Ask question**, and **Submit context** behavior. Community submissions remain explicitly non-canonical and start as `unverified` or `needs-context`.
+MW-0042 supports stateful **Follow**, **Save**, **Ask question**, **Submit context**, and attributed **thread replies**. Thread detail exposes source locators plus edit/moderation history. Community submissions remain explicitly non-canonical and start as `unverified` or `needs-context`.
 
 ## Ownership boundaries
 
