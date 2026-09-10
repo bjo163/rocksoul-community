@@ -1,13 +1,10 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from "react"
 import {
   AuthScreen,
-  Badge,
-  Button,
   CaseHeader,
   CommunityComposer,
   CommunitySourceLocatorLink,
   DiscussionItem,
-  Input,
   MetricTile,
   MoonWitnessBrand,
   MoonWitnessCommunityParticipationAsset,
@@ -17,10 +14,13 @@ import {
   NotificationItem,
   SubmissionCard,
   StatePanel,
-  Textarea,
   mw0042,
   type CommunityParticipationAssetId,
 } from "@rocksoul/ui"
+import { Badge } from "@rocksoul/ui/components/ui/badge"
+import { Button } from "@rocksoul/ui/components/ui/button"
+import { Input } from "@rocksoul/ui/components/ui/input"
+import { Textarea } from "@rocksoul/ui/components/ui/textarea"
 import { communityCase, type CommunityState, type CommunityThread } from "./community-data"
 import { buildPlatformIdentityUrl, PLATFORM_IDENTITY_URL } from "./identity"
 
