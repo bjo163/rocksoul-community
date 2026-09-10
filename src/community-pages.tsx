@@ -26,6 +26,7 @@ import { buildPlatformIdentityUrl, PLATFORM_IDENTITY_URL } from "./identity"
 
 export type Navigate = (path: string) => void
 
+
 const communityNavigation = [
   { label: "Community", href: "/community" },
   { label: "Threads", href: "/community/threads" },
@@ -45,12 +46,12 @@ function CommunityHeader({ caseId }: { caseId?: string }) {
   )
 }
 
-
 function SourceLocator({ source }: { source?: string }) {
   return <CommunitySourceLocatorLink source={source} className={source ? "community-source-link" : "community-source-missing"} />
 }
 
 function ParticipationVisual({ asset, label, compact = false }: { asset: CommunityParticipationAssetId; label: string; compact?: boolean }) {
+
   return (
     <figure className={compact ? "community-participation-visual compact" : "community-participation-visual"}>
       <MoonWitnessCommunityParticipationAsset asset={asset} alt={label} />
